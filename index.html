@@ -6,6 +6,13 @@
     <title>CSRD Challenge - Finale</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        body {
+            /* REMPLACEZ 'background.jpg' PAR VOTRE IMAGE */
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
         .esg-active { filter: grayscale(0%); opacity: 1; transform: scale(1.1); border: 2px solid #4ade80; background: rgba(74, 222, 128, 0.1); }
         .esg-inactive { filter: grayscale(100%); opacity: 0.2; }
         .card { transition: all 0.3s ease; }
@@ -15,36 +22,40 @@
             to { box-shadow: 0 0 30px #eab308; }
         }
         .progress-label { font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60px; }
+        .invincible { border: 2px solid #60a5fa !important; box-shadow: 0 0 15px #3b82f6; }
     </style>
 </head>
-<body class="bg-slate-950 text-white font-sans p-4 pb-40">
+<body class="text-white font-sans p-4 pb-40">
 
-    <header class="max-w-7xl mx-auto mb-8">
+    <header class="max-w-7xl mx-auto mb-8 bg-slate-900/60 p-6 rounded-2xl backdrop-blur-md border border-slate-800 shadow-2xl">
         <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-4xl font-black text-green-500 tracking-tighter">CSRD CHALLENGE</h1>
-                <p class="text-slate-400 text-sm uppercase tracking-widest">Sustainability Race</p>
+            <div class="flex items-center gap-4">
+                <img src="logo.png" alt="Logo" class="w-16 h-16 object-contain rounded-lg shadow-lg border border-slate-700">
+                <div>
+                    <h1 class="text-4xl font-black text-green-500 tracking-tighter">CSRD CHALLENGE</h1>
+                    <p class="text-slate-400 text-sm uppercase tracking-widest">Sustainability Race</p>
+                </div>
             </div>
-            <button onclick="resetGame()" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-400 hover:text-white px-3 py-2 rounded border border-slate-700">
+            <button onclick="resetGame()" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-400 hover:text-white px-4 py-2 rounded-lg border border-slate-700 transition-colors">
                 NOUVELLE PARTIE
             </button>
         </div>
         
-        <div id="winner-banner" class="hidden mt-6 bg-yellow-500 text-black p-4 rounded-xl text-center font-black text-2xl uppercase tracking-tighter animate-bounce">
+        <div id="winner-banner" class="hidden mt-6 bg-yellow-500 text-black p-4 rounded-xl text-center font-black text-2xl uppercase tracking-tighter animate-bounce shadow-[0_0_20px_rgba(234,179,8,0.5)]">
             🏆 <span id="winner-name"></span> A GAGNÉ LA PARTIE ! 🏆
         </div>
     </header>
 
     <main id="players-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-        </main>
+    </main>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t-2 border-slate-800 p-8 shadow-2xl z-50">
+    <div class="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-xl border-t-2 border-slate-800 p-8 shadow-2xl z-50">
         <div class="max-w-7xl mx-auto">
-            <div class="relative h-6 bg-slate-800 rounded-full border border-slate-700 flex items-center">
-                <div class="absolute inset-0 flex justify-between px-4 text-[10px] text-slate-600 font-bold items-center pointer-events-none">
-                    <span>START</span>
-                    <span>MI-PARCOURS</span>
-                    <span>GOAL (10)</span>
+            <div class="relative h-6 bg-slate-800 rounded-full border border-slate-700 flex items-center shadow-inner">
+                <div class="absolute inset-0 flex justify-between px-6 text-[10px] text-slate-500 font-bold items-center pointer-events-none uppercase tracking-tighter">
+                    <span>Dépôt de bilan</span>
+                    <span>Émergence</span>
+                    <span>Objectif CSRD (10)</span>
                 </div>
                 <div id="global-track"></div>
             </div>
@@ -61,15 +72,15 @@
 
         let isGameOver = false;
 
-        // Fonction pour obtenir le nom du niveau en anglais
         function getLevelName(count) {
             if (count === 0) return "Start-up";
-            if (count === 1) return "SME";
-            return "Corporation";
+            if (count === 1) return "SME (PME)";
+            return "Corporation (Grand Groupe)";
         }
 
         function checkWinner() {
-            const winner = players.find(p => p.points >= 10);
+            // Un joueur gagne s'il a 10 points ET les 3 piliers (Règle 2)
+            const winner = players.find(p => p.points >= 10 && p.e && p.s && p.g);
             if (winner) {
                 isGameOver = true;
                 document.getElementById('winner-banner').classList.remove('hidden');
@@ -93,52 +104,58 @@
             track.innerHTML = '';
 
             players.forEach(p => {
-                const isWinner = p.points >= 10;
+                const isInvincible = p.e && p.s && p.g;
+                const isWinner = p.points >= 10 && isInvincible;
                 
-                // Card UI
                 container.innerHTML += `
-                    <div class="card bg-slate-900 border-2 ${isWinner ? 'border-yellow-500 winner-glow shadow-yellow-500/50' : 'border-slate-800'} rounded-2xl p-6 ${isGameOver && !isWinner ? 'opacity-50' : ''}">
+                    <div class="card bg-slate-900/70 backdrop-blur-md border-2 ${isWinner ? 'border-yellow-500 winner-glow shadow-yellow-500/50' : (isInvincible ? 'invincible' : 'border-slate-800')} rounded-2xl p-6 ${isGameOver && !isWinner ? 'opacity-40 scale-95' : 'scale-100'}">
                         <div class="mb-4">
-                            <input type="text" value="${p.name}" 
-                                onchange="updateName(${p.id}, this.value)"
-                                ${isGameOver ? 'disabled' : ''}
-                                class="bg-transparent border-b border-transparent hover:border-slate-600 outline-none font-bold text-xl w-full">
+                            <div class="flex justify-between items-start gap-2">
+                                <input type="text" value="${p.name}" 
+                                    onchange="updateName(${p.id}, this.value)"
+                                    ${isGameOver ? 'disabled' : ''}
+                                    class="bg-transparent border-b border-transparent hover:border-slate-600 outline-none font-bold text-xl w-full truncate">
+                                ${isInvincible ? '<span class="text-blue-400 text-[9px] font-black border border-blue-400 px-1 rounded animate-pulse whitespace-nowrap">🛡️ SHIELDED</span>' : ''}
+                            </div>
                             <div class="text-[10px] font-bold uppercase tracking-widest ${p.industries === 0 ? 'text-slate-500' : 'text-green-400'} mt-1">
                                 ${getLevelName(p.industries)}
                             </div>
                         </div>
 
-                        <div class="text-5xl font-black mb-6">${p.points} <span class="text-xs text-slate-500 uppercase">Pts</span></div>
+                        <div class="text-5xl font-black mb-6 tracking-tighter">${p.points} <span class="text-xs text-slate-500 uppercase font-normal">Pts</span></div>
 
                         <div class="flex gap-2 mb-6">
-                            <button onclick="togglePillar(${p.id}, 'e')" ${isGameOver ? 'disabled' : ''} class="flex-1 py-2 rounded-lg ${p.e ? 'esg-active' : 'esg-inactive'}">🌿</button>
-                            <button onclick="togglePillar(${p.id}, 's')" ${isGameOver ? 'disabled' : ''} class="flex-1 py-2 rounded-lg ${p.s ? 'esg-active' : 'esg-inactive'}">🤝</button>
-                            <button onclick="togglePillar(${p.id}, 'g')" ${isGameOver ? 'disabled' : ''} class="flex-1 py-2 rounded-lg ${p.g ? 'esg-active' : 'esg-inactive'}">⚖️</button>
+                            <button onclick="togglePillar(${p.id}, 'e')" title="Environnement" ${isGameOver ? 'disabled' : ''} class="flex-1 py-3 rounded-xl transition-all ${p.e ? 'esg-active' : 'esg-inactive bg-slate-800'}">🌿</button>
+                            <button onclick="togglePillar(${p.id}, 's')" title="Social" ${isGameOver ? 'disabled' : ''} class="flex-1 py-3 rounded-xl transition-all ${p.s ? 'esg-active' : 'esg-inactive bg-slate-800'}">🤝</button>
+                            <button onclick="togglePillar(${p.id}, 'g')" title="Gouvernance" ${isGameOver ? 'disabled' : ''} class="flex-1 py-3 rounded-xl transition-all ${p.g ? 'esg-active' : 'esg-inactive bg-slate-800'}">⚖️</button>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2 mb-6">
-                            <button onclick="addPoint(${p.id}, 2)" ${isGameOver ? 'disabled' : ''} class="bg-green-600 p-2 rounded font-bold text-[10px]">PHASE A (+2)</button>
-                            <button onclick="addPoint(${p.id}, -1)" ${isGameOver ? 'disabled' : ''} class="bg-red-900 p-2 rounded font-bold text-[10px]">RISQUE (-1)</button>
+                            <button onclick="addPoint(${p.id}, 2)" ${isGameOver ? 'disabled' : ''} class="bg-green-600 hover:bg-green-500 p-2 rounded-lg font-black text-[10px] transition-colors shadow-lg">PHASE A (+2)</button>
+                            <button onclick="addPoint(${p.id}, -1)" 
+                                ${(isGameOver || isInvincible) ? 'disabled' : ''} 
+                                class="${isInvincible ? 'bg-slate-700 opacity-50 cursor-not-allowed text-slate-400' : 'bg-red-900 hover:bg-red-800 shadow-lg'} p-2 rounded-lg font-black text-[10px] transition-all">
+                                ${isInvincible ? '🛡️ BLOQUÉ' : 'RISQUE (-1)'}
+                            </button>
                         </div>
 
                         <div class="flex justify-between items-center border-t border-slate-800 pt-4">
-                            <span class="text-[10px] text-slate-500 uppercase font-bold">Usines: ${p.industries}</span>
+                            <span class="text-[10px] text-slate-500 uppercase font-black">Industries: ${p.industries}</span>
                             <div class="flex gap-2">
-                                <button onclick="updateIndustry(${p.id}, 1)" ${isGameOver ? 'disabled' : ''} class="w-6 h-6 bg-slate-800 rounded">+</button>
-                                <button onclick="updateIndustry(${p.id}, -1)" ${isGameOver ? 'disabled' : ''} class="w-6 h-6 bg-slate-800 rounded">-</button>
+                                <button onclick="updateIndustry(${p.id}, 1)" ${isGameOver ? 'disabled' : ''} class="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center border border-slate-700 shadow-md">+</button>
+                                <button onclick="updateIndustry(${p.id}, -1)" ${isGameOver ? 'disabled' : ''} class="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center border border-slate-700 shadow-md">-</button>
                             </div>
                         </div>
                     </div>
                 `;
 
-                // Progress Bar Dot
                 const position = Math.min((p.points / 10) * 100, 100);
                 track.innerHTML += `
-                    <div class="absolute transition-all duration-500 flex flex-col items-center" style="left: calc(${position}% - 20px); top: -25px; z-index: ${p.id}">
-                        <div class="bg-white text-black text-[8px] font-bold px-1 rounded mb-1 shadow-md progress-label">
+                    <div class="absolute transition-all duration-700 ease-out flex flex-col items-center" style="left: calc(${position}% - 20px); top: -28px; z-index: ${p.id}">
+                        <div class="bg-white text-black text-[8px] font-black px-1.5 py-0.5 rounded shadow-xl mb-1 progress-label">
                             ${isWinner ? '🏆 WINNER' : p.name}
                         </div>
-                        <div class="w-8 h-8 rounded-full border-2 border-white shadow-xl flex items-center justify-center font-black text-xs" style="background-color: ${p.color}">
+                        <div class="w-9 h-9 rounded-full border-2 ${isInvincible ? 'border-blue-400 shadow-[0_0_15px_rgba(96,165,250,0.8)]' : 'border-white'} shadow-2xl flex items-center justify-center font-black text-sm text-white transition-transform hover:scale-125 cursor-pointer" style="background-color: ${p.color}">
                             ${p.points}
                         </div>
                     </div>
@@ -172,12 +189,12 @@
                 p[pillar] = !p[pillar];
                 save();
             } else {
-                alert("Niveau PME requis (1 usine) !");
+                alert("Niveau PME requis (minimum 1 Industrie) pour valider une stratégie RSE !");
             }
         }
 
         function resetGame() {
-            if(confirm("Effacer les scores et recommencer ?")) {
+            if(confirm("Attention : Cela va réinitialiser tous les scores. Continuer ?")) {
                 localStorage.clear();
                 location.reload();
             }
