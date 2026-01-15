@@ -37,12 +37,12 @@
                 </div>
             </div>
             <button onclick="resetGame()" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-400 hover:text-white px-4 py-2 rounded-lg border border-slate-700 transition-colors">
-                NOUVELLE PARTIE
+                NEW GAME
             </button>
         </div>
         
         <div id="winner-banner" class="hidden mt-6 bg-yellow-500 text-black p-4 rounded-xl text-center font-black text-2xl uppercase tracking-tighter animate-bounce shadow-[0_0_20px_rgba(234,179,8,0.5)]">
-            🏆 <span id="winner-name"></span> A GAGNÉ LA PARTIE ! 🏆
+            🏆 <span id="winner-name"></span> HAS WON THE GAME ! 🏆
         </div>
     </header>
 
@@ -64,18 +64,18 @@
 
     <script>
         let players = JSON.parse(localStorage.getItem('csrd-players')) || [
-            { id: 1, name: "Entreprise 1", points: 0, industries: 0, e: false, s: false, g: false, color: "#ef4444" },
-            { id: 2, name: "Entreprise 2", points: 0, industries: 0, e: false, s: false, g: false, color: "#3b82f6" },
-            { id: 3, name: "Entreprise 3", points: 0, industries: 0, e: false, s: false, g: false, color: "#10b981" },
-            { id: 4, name: "Entreprise 4", points: 0, industries: 0, e: false, s: false, g: false, color: "#f59e0b" }
+            { id: 1, name: "company 1", points: 0, industries: 0, e: false, s: false, g: false, color: "#ef4444" },
+            { id: 2, name: "company 2", points: 0, industries: 0, e: false, s: false, g: false, color: "#3b82f6" },
+            { id: 3, name: "company 3", points: 0, industries: 0, e: false, s: false, g: false, color: "#10b981" },
+            { id: 4, name: "company 4", points: 0, industries: 0, e: false, s: false, g: false, color: "#f59e0b" }
         ];
 
         let isGameOver = false;
 
         function getLevelName(count) {
             if (count === 0) return "Start-up";
-            if (count === 1) return "SME (PME)";
-            return "Corporation (Grand Groupe)";
+            if (count === 1) return "SME ";
+            return "Corporation ";
         }
 
         function checkWinner() {
